@@ -20,21 +20,26 @@ class EquipmentController extends Controller
         $available_equipments = Equipment::available();
         $unavailable_equipments = Equipment::unavailable();
         $equipments = [];
-        foreach($available_equipments as $eq){
+        foreach ($available_equipments as $eq) {
             $eq["availability"] = "available";
             $eq["reservation"] = null;
             $eq["borrow"] = null;
             array_push($equipments, $eq);
         }
-        foreach($unavailable_equipments as $eq){
+        foreach ($unavailable_equipments as $eq) {
             $eq["availability"] = "unavailable";
             $eq["reservation"] = Equipment::findOrFail($eq["id"])->getCurrentReservation();
             $eq["borrow"] = Equipment::findOrFail($eq["id"])->getCurrentBorrow();
             array_push($equipments, $eq);
         }
-        if($asked_category != null){
-        $equipments = array_filter($equipments,function ($eq) use ($asked_category) {
+        //ne retourne qu'une seule catégorie ou ordonne selon la catégorie
+        if ($asked_category != null) {
+            $equipments = array_filter($equipments, function ($eq) use ($asked_category) {
                 return $eq["category"] == $asked_category;
+            });
+        } else {
+            uasort($equipments, function ($a, $b) {
+                return strcmp($a['category'], $b['category']);
             });
         }
         return view('equipments_view')->with('data', $equipments);

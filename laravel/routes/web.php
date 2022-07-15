@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EquipmentUserController;
+use App\Http\Controllers\ReservationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,9 +32,9 @@ Route::get('equipments/category/{category}', [EquipmentController::class, "index
 Route::get('categories', [EquipmentController::class, 'getCategories'])->name('categories');
 
 Route::get('interactions', [EquipmentUserController::class, 'getInteractions']);
-Route::post('reserve', [EquipmentUserController::class, 'reserve'])->name('reserve');
-Route::post('reserve/accept', [EquipmentUserController::class, 'acceptReservation'])->name('reserve.accept');
-Route::post('reserve/cancel', [EquipmentUserController::class, 'cancelreservation'])->name('reserve.cancel');
+Route::post('reserve', [ReservationsController::class, 'reserve'])->name('reserve');
+Route::post('reserve/accept', [ReservationsController::class, 'acceptReservation'])->name('reserve.accept');
+Route::post('reserve/cancel', [ReservationsController::class, 'cancelreservation'])->name('reserve.cancel');
 Route::post('borrow/', [EquipmentUserController::class, 'borrow'])->name('borrow.start');
 Route::post('borrow/end', [EquipmentUserController::class, 'endBorrow'])->name('borrow.end');
 
@@ -46,7 +47,8 @@ Route::post('borrow/end', [EquipmentUserController::class, 'endBorrow'])->name('
 
 
 Route::get('test', function () {
-    return Equipment::findOrFail(11)->getCurrentBorrow();
+    $eq = Equipment::findOrFail(12);
+    return $eq->checkAvailability("2021-08-07", "2022-09-30");
 });
 Route::get('test2', function () {
     return EquipmentUser::validateAllFinishedReservations();

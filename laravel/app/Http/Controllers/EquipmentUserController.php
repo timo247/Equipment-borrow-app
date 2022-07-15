@@ -9,18 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class EquipmentUserController extends Controller
 {
-    
-    public function reserve(Request $request){
-        dd('reserve->');
-    }
-
-    public function acceptReservation(Request $request){
-        dd('end-reserve->');
-    }
-
-    public function cancelReservation(Request $request){
-        dd('cancel-reserve->');
-    }
 
 
     public function borrow(Request $request){

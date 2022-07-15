@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use App\Helpers\AppHelper;
 use Carbon\Carbon;
+use App\Models\Borrow;
+use App\Helpers\AppHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -123,5 +124,17 @@ class Equipment extends Model
             $borrow["username"] = User::findOrFail($borrow["user_id"])->username;
         } 
         return($borrow);
+    }
+
+    public function checkAvailability($from, $to){
+        $constraining_reservations = Reservation::equipmentReservationsCoveringTimeRange($this->id, $from, $to);
+        $constraining_delivered_borrows = Borrow::equipmentDeliveredBorrowsCoveringTimeRange($this->id, $from, $to);
+        $constraining_undelivered_borrows = Borrow::equipmentUndeliveredBorrowsUntilDate($this->id, $to);
+        dd($constraining_undelivered_borrows);
+        if(empty($constraining_reservations) && empty($constraining_delivered_borrows) && empty($constraining_undelivered_borrows)){
+            return "available";
+        } else {
+            return "unavailable";
+        }
     }
 }

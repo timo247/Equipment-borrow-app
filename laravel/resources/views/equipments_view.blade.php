@@ -27,6 +27,7 @@
             <form class="reserve-form" action="{{ route('reserve') }} " method="POST">
                 @csrf
                 @method('POST')
+                <input style="display_none"  type="hidden" name="equipment_id" value="{{ $equipment["id"] }}" disabled>
                 <input type="submit" class="reserve-button" value="reserve">
             </form>
         @else
