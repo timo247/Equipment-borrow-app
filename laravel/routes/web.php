@@ -6,6 +6,7 @@ use App\Models\EquipmentUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EquipmentUserController;
 
 /*
@@ -19,6 +20,7 @@ use App\Http\Controllers\EquipmentUserController;
 |
 */
 Auth::routes();
+Route::get('logout', [LoginController::class, 'logout']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/', function () {
     return view('welcome');
@@ -27,11 +29,15 @@ Route::get('/', function () {
 Route::resource('equipments', EquipmentController::class);
 Route::get('equipments/category/{category}', [EquipmentController::class, "index"])->name('equipments_category.index');
 Route::get('categories', [EquipmentController::class, 'getCategories'])->name('categories');
+
 Route::get('interactions', [EquipmentUserController::class, 'getInteractions']);
-Route::post('reserve', [EquipmentUserController::class, 'reserve']);
-Route::get('reserve', function(){
-return view('add_reservations_view');
-});
+Route::post('reserve', [EquipmentUserController::class, 'reserve'])->name('reserve');
+Route::post('reserve/accept', [EquipmentUserController::class, 'acceptReservation'])->name('reserve.accept');
+Route::post('reserve/cancel', [EquipmentUserController::class, 'cancelreservation'])->name('reserve.cancel');
+Route::post('borrow/', [EquipmentUserController::class, 'borrow'])->name('borrow.start');
+Route::post('borrow/end', [EquipmentUserController::class, 'endBorrow'])->name('borrow.end');
+
+
 
 
 

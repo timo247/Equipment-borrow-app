@@ -4,7 +4,7 @@
 @foreach($data as $category)
 
 <div class="category">
-    <a href="{{ route('equipments.index', ['category' => $category['name']]) }}">
+    <a href="{{ route('equipments_category.index', ['category' => $category['name']]) }}">
     <img class="category-img" src="{{ asset('/storage/images/'.$category['image_url']) }}">
     <span class="nom">{{ ucFirst($category["name"].'s') }}</span>
     </a>

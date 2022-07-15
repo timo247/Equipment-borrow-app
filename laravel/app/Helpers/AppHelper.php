@@ -52,8 +52,13 @@ class AppHelper
     }
 }
 
+/*practical informaitons
+All reservations having end_validation => 00.00.00 are cancelled ones
+
+
+
 //Practical queries:
-/*
+
 Create a reservation
 App\Models\EquipmentUser::create(['user_id' => 1, 'equipment_id' => 1, 'type' => 'reservation', 'start' => '2022-06-14 11:18:47', 'end' => '2022-06-14 11:18:47', 'start_validation' => '2022-06-15 11:18:47', 'end_validation' => '2022-06-19 11:18:47', 'start_validation_user_id' => 1, 'end_validation_user_id' =>1])
 Get a reservation

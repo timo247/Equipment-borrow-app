@@ -9,7 +9,31 @@ use Illuminate\Support\Facades\DB;
 
 class EquipmentUserController extends Controller
 {
+    
     public function reserve(Request $request){
+        dd('reserve->');
+    }
+
+    public function acceptReservation(Request $request){
+        dd('end-reserve->');
+    }
+
+    public function cancelReservation(Request $request){
+        dd('cancel-reserve->');
+    }
+
+
+    public function borrow(Request $request){
+        dd('borrow->');
+    }
+
+    public function endBorrow(Request $request){
+        dd('end-borrow->');
+    }
+
+
+
+    public function store(Request $request){
         $inputs = $request->input();
         $equipment = Equipment::findOrFail($inputs['equipment_id']);      
         $user = auth()->user();

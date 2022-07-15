@@ -21,13 +21,13 @@ class EquipmentController extends Controller
         $unavailable_equipments = Equipment::unavailable();
         $equipments = [];
         foreach($available_equipments as $eq){
-            $eq["availability"] = true;
+            $eq["availability"] = "available";
             $eq["reservation"] = null;
             $eq["borrow"] = null;
             array_push($equipments, $eq);
         }
         foreach($unavailable_equipments as $eq){
-            $eq["availability"] = false;
+            $eq["availability"] = "unavailable";
             $eq["reservation"] = Equipment::findOrFail($eq["id"])->getCurrentReservation();
             $eq["borrow"] = Equipment::findOrFail($eq["id"])->getCurrentBorrow();
             array_push($equipments, $eq);

@@ -120,7 +120,7 @@ class Equipment extends Model
         ])->orderBy('start_confrimation', 'desc')->limit(1)->first();
         if(!empty($borrow)){
             $borrow = $borrow->toArray();
-            $borrow["borrow"] = User::findOrFail($borrow["user_id"])->username;
+            $borrow["username"] = User::findOrFail($borrow["user_id"])->username;
         } 
         return($borrow);
     }
