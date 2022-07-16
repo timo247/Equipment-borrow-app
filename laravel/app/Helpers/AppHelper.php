@@ -50,10 +50,21 @@ class AppHelper
         }
         return $new_array;
     }
+
+    public static function in_multidimensional_arra($arr1, $arr2, $comparaison_key){
+        $in_arr = false;
+        foreach($arr1 as $comp_arr){
+            if($arr2[$comparaison_key] == $comp_arr[$comparaison_key]){
+                $in_arr = true;
+            }
+        }
+        return $in_arr;
+    }
 }
 
 /*practical informaitons
 All reservations having end_validation => 00.00.00 are cancelled ones
+No reservation can be done ending after 1 year from the time the reservation is made. -> No reservation can end 2 year after it is done.
 
 
 

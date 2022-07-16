@@ -46,11 +46,11 @@ class Equipment extends Model
         return $categories;
     }
 
-    public static function unreserved($return_ids)
+    public static function unreserved_ones($return_ids)
     {
         $reserved = EquipmentUser::where([
-                ['type', '=', 'reservation'], ['end', '>=', Carbon::now()], ['end_validation', '=', null]
-            ])->select('equipment_id')->distinct()->get()->toArray();
+            ['type', '=', 'reservation'], ['end', '>=', Carbon::now()], ['end_validation', '=', null]
+        ])->select('equipment_id')->distinct()->get()->toArray();
         $reserved = AppHelper::array2DSingleValuesTo1D($reserved, 'equipment_id');
         if ($return_ids) {
             $unreserved_equipments_ids = Equipment::whereNotIn('id', $reserved)->select('id')->get()->toArray();
@@ -62,11 +62,11 @@ class Equipment extends Model
         }
     }
 
-    public static function unborrowed($return_ids = false)
+    public static function unborrowed_ones($return_ids = false)
     {
-        $borrowed =EquipmentUser::where([
-                ['type', '=', 'borrow'], ['start_validation', '!=', null], ['end_validation', '=', null]
-            ])->select('equipment_id')->distinct()->get();
+        $borrowed = EquipmentUser::where([
+            ['type', '=', 'borrow'], ['start_validation', '!=', null], ['end_validation', '=', null]
+        ])->select('equipment_id')->distinct()->get();
         $borrowed = AppHelper::array2DSingleValuesTo1D($borrowed, 'equipment_id');
 
         if ($return_ids) {
@@ -79,11 +79,12 @@ class Equipment extends Model
         }
     }
 
-    public static function available($return_ids = false){
-        $unreserved = Equipment::unreserved(true);
-        $unborrowed = Equipment::unborrowed(true);
+    public static function available($return_ids = false)
+    {
+        $unreserved = Equipment::unreserved_ones(true);
+        $unborrowed = Equipment::unborrowed_ones(true);
         $available_ids = array_intersect($unreserved, $unborrowed);
-        if($return_ids){
+        if ($return_ids) {
             $available_equipments = Equipment::whereIn('id', $available_ids)->select('id')->get()->toArray();
             $available_equipments = AppHelper::array2DSingleValuesTo1D($available_equipments, 'id');
         } else {
@@ -93,45 +94,49 @@ class Equipment extends Model
     }
 
 
-    public static function unavailable($return_ids = false){
+    public static function unavailable($return_ids = false)
+    {
         $available = Equipment::available(true);
         $all_ids = Equipment::select('id')->get()->toArray();
         $all_ids =  AppHelper::array2DSingleValuesTo1D($all_ids, 'id');
         $unavailable = array_diff($all_ids, $available);
-        if(!$return_ids){
+        if (!$return_ids) {
             $unavailable = Equipment::whereIn('id', $unavailable)->get()->toArray();
         }
-        return($unavailable);
+        return ($unavailable);
     }
 
-    public function getCurrentReservation(){
+    public function getCurrentReservation()
+    {
         $reservation = EquipmentUser::where([
             ['type', '=', 'reservation'], ['end_validation', '=', null], ['equipment_id', '=', $this->id]
         ])->orderBy('start_confrimation', 'desc')->limit(1)->first();
-        if(!empty($reservation)){
+        if (!empty($reservation)) {
             $reservation = $reservation->toArray();
             $reservation["username"] = User::findOrFail($reservation["user_id"])->username;
-        } 
-        return($reservation);
+        }
+        return ($reservation);
     }
 
-    public function getCurrentBorrow(){
+    public function getCurrentBorrow()
+    {
         $borrow = EquipmentUser::where([
             ['type', '=', 'borrow'], ['end_validation', '=', null], ['equipment_id', '=', $this->id]
         ])->orderBy('start_confrimation', 'desc')->limit(1)->first();
-        if(!empty($borrow)){
+        if (!empty($borrow)) {
             $borrow = $borrow->toArray();
             $borrow["username"] = User::findOrFail($borrow["user_id"])->username;
-        } 
-        return($borrow);
+        }
+        return ($borrow);
     }
 
-    public function checkAvailability($from, $to){
+    public function checkAvailability($from, $to)
+    {
         $constraining_reservations = Reservation::equipmentReservationsCoveringTimeRange($this->id, $from, $to);
         $constraining_delivered_borrows = Borrow::equipmentDeliveredBorrowsCoveringTimeRange($this->id, $from, $to);
         $constraining_undelivered_borrows = Borrow::equipmentUndeliveredBorrowsUntilDate($this->id, $to);
         dd($constraining_undelivered_borrows);
-        if(empty($constraining_reservations) && empty($constraining_delivered_borrows) && empty($constraining_undelivered_borrows)){
+        if (empty($constraining_reservations) && empty($constraining_delivered_borrows) && empty($constraining_undelivered_borrows)) {
             return "available";
         } else {
             return "unavailable";

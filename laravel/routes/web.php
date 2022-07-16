@@ -1,14 +1,16 @@
 <?php
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Equipment;
+use App\Models\Reservation;
 use App\Models\EquipmentUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\EquipmentUserController;
 use App\Http\Controllers\ReservationsController;
+use App\Http\Controllers\EquipmentUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +50,8 @@ Route::post('borrow/end', [EquipmentUserController::class, 'endBorrow'])->name('
 
 Route::get('test', function () {
     $eq = Equipment::findOrFail(12);
-    return $eq->checkAvailability("2021-08-07", "2022-09-30");
+    return Reservation::equipmentReservationsCoveringTimeRange(11, Carbon::now(), Carbon::now()->addYear(2));
+    // dd($eq, $potential_reservations);("2022-07-21");
 });
 Route::get('test2', function () {
     return EquipmentUser::validateAllFinishedReservations();

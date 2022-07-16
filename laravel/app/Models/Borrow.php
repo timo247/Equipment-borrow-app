@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\AppHelper;
 use App\Models\EquipmentUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +11,7 @@ class Borrow extends Model
 {
     use HasFactory;
 
-    public static function equipmentDeliveredBorrowsCoveringTimeRange($id, $from, $to, $return_ids = false){
+    public function equipmentDeliveredBorrowsCoveringTimeRange($id, $from, $to, $return_ids = false){
     $borrows = EquipmentUser::
          //begins before from, ends after from
         where([
@@ -38,6 +39,16 @@ class Borrow extends Model
             ["equipment_id", "=", $id], ["type", "=", "borrow"], ["start_validation", "!=", null],  ["start", "<=", $date], ["end", "=", null]
         ])->get()->toArray();
         return $borrows;
+    }
+
+    public static function equipmentsBorrowsEndingAfterDate($from){
+        $ids = EquipmentUser::where([
+            ['type', '=', 'borrow'],['end', '>=', $from]
+        ])->select('id')->get()->toArray();
+        if(!empty($ids)){
+            $ids = AppHelper::array2DSingleValuesTo1D($ids, "id");
+        }
+        dd($ids);
     }
 
 }

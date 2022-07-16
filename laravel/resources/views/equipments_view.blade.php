@@ -8,7 +8,7 @@
         <span class="name"> {{ $equipment["name"]}} </span>
         <span class="description"> {{ $equipment["description"]}}</span>
         <span class="availability">{{ $equipment["availability"] }}</span>
-        @if($equipment["reservation"] != null)
+        @if($equipment["reservations"] != null)
             <span class="reservation"> 
                 Reserved from: {{ \Carbon\Carbon::parse($equipment["reservation"]["start"])->format('l j F') }}
                  to {{ \Carbon\Carbon::parse($equipment["reservation"]["end"])->format('l j F') }}

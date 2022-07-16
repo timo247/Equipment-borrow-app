@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Equipment;
 use App\Helpers\AppHelper;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -19,19 +20,21 @@ class EquipmentController extends Controller
     {
         $available_equipments = Equipment::available();
         $unavailable_equipments = Equipment::unavailable();
+        $all_equipments = array_merge($available_equipments, $unavailable_equipments);
         $equipments = [];
-        foreach ($available_equipments as $eq) {
-            $eq["availability"] = "available";
-            $eq["reservation"] = null;
+        foreach ($all_equipments as $eq) {
+            $reservations = Reservation::equipmentReservationsCoveringTimeRange($eq["id"], Carbon::now(), Carbon::now()->addYear(2));
+            $eq_is_available = AppHelper::in_multidimensional_arra($available_equipments, $eq, "id");
+            if($eq_is_available){
+                $eq["availability"] = "available";
+            } else {
+                $eq["availability"] = "unavailable";
+            }
+            $eq["reservations"] = $reservations;
             $eq["borrow"] = null;
             array_push($equipments, $eq);
         }
-        foreach ($unavailable_equipments as $eq) {
-            $eq["availability"] = "unavailable";
-            $eq["reservation"] = Equipment::findOrFail($eq["id"])->getCurrentReservation();
-            $eq["borrow"] = Equipment::findOrFail($eq["id"])->getCurrentBorrow();
-            array_push($equipments, $eq);
-        }
+        dd($equipments);
         //ne retourne qu'une seule catégorie ou ordonne selon la catégorie
         if ($asked_category != null) {
             $equipments = array_filter($equipments, function ($eq) use ($asked_category) {
