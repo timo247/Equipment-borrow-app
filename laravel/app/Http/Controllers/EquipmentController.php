@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Equipment;
 use App\Helpers\AppHelper;
 use App\Models\Reservation;
@@ -24,7 +25,7 @@ class EquipmentController extends Controller
         $equipments = [];
         foreach ($all_equipments as $eq) {
             $reservations = Reservation::equipmentReservationsCoveringTimeRange($eq["id"], Carbon::now(), Carbon::now()->addYear(2));
-            $eq_is_available = AppHelper::in_multidimensional_arra($available_equipments, $eq, "id");
+            $eq_is_available = AppHelper::in_multidimensional_array($available_equipments, $eq, "id");
             if($eq_is_available){
                 $eq["availability"] = "available";
             } else {
@@ -34,7 +35,6 @@ class EquipmentController extends Controller
             $eq["borrow"] = null;
             array_push($equipments, $eq);
         }
-        dd($equipments);
         //ne retourne qu'une seule catégorie ou ordonne selon la catégorie
         if ($asked_category != null) {
             $equipments = array_filter($equipments, function ($eq) use ($asked_category) {

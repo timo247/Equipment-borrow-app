@@ -29,8 +29,14 @@ class Reservation extends Model
             ["equipment_id", "=", $id], ["type", "=", "reservation"], ["start_validation", "!=", null],  ["start", "<=", $from], ["end", ">=", $to]
         ])
         ->get()->toArray();
-        // dd($reservations);
-        return($reservations);
+        $res_with_usernames = [];
+        foreach($reservations as $res){        
+           $username = User::where('id', '=', $res["user_id"])->select('username')->get()->toArray();
+           $username = AppHelper::array2DSingleValuesTo1D($username, "username");
+           $res ["username"] = $username[0];
+           array_push($res_with_usernames, $res);
+        }
+        return($res_with_usernames);
     }
 
     // public static function equipmentsReservationsCoveringTimeRange($from, $to){

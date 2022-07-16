@@ -51,7 +51,7 @@ class AppHelper
         return $new_array;
     }
 
-    public static function in_multidimensional_arra($arr1, $arr2, $comparaison_key){
+    public static function in_multidimensional_array($arr1, $arr2, $comparaison_key){
         $in_arr = false;
         foreach($arr1 as $comp_arr){
             if($arr2[$comparaison_key] == $comp_arr[$comparaison_key]){

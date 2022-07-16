@@ -8,22 +8,24 @@
         <span class="name"> {{ $equipment["name"]}} </span>
         <span class="description"> {{ $equipment["description"]}}</span>
         <span class="availability">{{ $equipment["availability"] }}</span>
-        @if($equipment["reservations"] != null)
-            <span class="reservation"> 
-                Reserved from: {{ \Carbon\Carbon::parse($equipment["reservation"]["start"])->format('l j F') }}
-                 to {{ \Carbon\Carbon::parse($equipment["reservation"]["end"])->format('l j F') }}
-            </span>
-            @can('isAdmin')
-                <span style="background-color:green">by {{ $equipment["reservation"]["username"] }}</span>
-            @endcan
+        @if(!empty($equipment["reservations"]))
+            @foreach($equipment["reservations"] as $reservation)
+                <span class="reservation"> 
+                    Reserved from: {{ \Carbon\Carbon::parse($reservation["start"])->format('l j F') }}
+                    to {{ \Carbon\Carbon::parse($reservation["end"])->format('l j F') }}
+                </span>
+                @can('isAdmin')
+                    <span style="background-color:green">by {{ $reservation["username"] }}</span>
+                @endcan
+            @endforeach    
         @endif
         @if($equipment["borrow"] != null)
-            @can('isAdmin')
-                <span class="borrow"> Borrowed since: {{ \Carbon\Carbon::parse($equipment["borrow"]["start"])->format('l j F') }}</span>
-                <span style="background-color:red">by {{ $equipment["borrow"]["username"] }}</span>
-            @endcan
+                @can('isAdmin')
+                    <span class="borrow"> Borrowed since: {{ \Carbon\Carbon::parse($equipment["borrow"]["start"])->format('l j F') }}</span>
+                    <span style="background-color:red">by {{ $equipment["borrow"]["username"] }}</span>
+                @endcan
         @endif
-        @if($equipment["reservation"] == null)
+        @if(!empty($equipment["reservations"]))
             <form class="reserve-form" action="{{ route('reserve') }} " method="POST">
                 @csrf
                 @method('POST')
@@ -32,16 +34,18 @@
             </form>
         @else
             @can('isAdmin')
-                <form class="reserve-form" action="{{ route('reserve.accept') }}" method="POST">
-                    @csrf
-                    @method('POST')
-                    <input type="submit" class="accept-reserve-button" value="accept reservation">
-                </form>
-                <form class="reserve-form" action="{{ route('reserve.cancel') }}" method="POST">
-                    @csrf
-                    @method('POST')
-                    <input type="submit" class="cancel-reserve-button" value="cancel reservation">
-                </form>
+                @foreach($equipment["reservations"] as $reservation)
+                    <form class="reserve-form" action="{{ route('reserve.accept') }}" method="POST">
+                        @csrf
+                        @method('POST')
+                        <input type="submit" class="accept-reserve-button" value="accept reservation">
+                    </form>
+                    <form class="reserve-form" action="{{ route('reserve.cancel') }}" method="POST">
+                        @csrf
+                        @method('POST')
+                        <input type="submit" class="cancel-reserve-button" value="cancel reservation">
+                    </form>
+                @endforeach    
             @endcan
         @endif    
         @can('isAdmin')
