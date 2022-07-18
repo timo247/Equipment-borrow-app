@@ -55,17 +55,26 @@ class Reservation extends Model
 
         if($nb_reservations == 0){
             array_push($possible_timeranges, [
-                "start" => Carbon::now(),
-                "end" => Carbon::now()->addYear(1)
+                "start" => Carbon::now()->toDateString(),
+                "end" => Carbon::now()->addYear(1)->toDateString()
             ]);
         }
 
-        //If theres only one, reservation can be done from its end + 1 day untill in a year
+        //If theres only one, reservation can be done from its end + 1 day untill in a year and from today untill its start
+        //Resrvation must be able to last today + 3 days
         if($nb_reservations == 1){
-            array_push($possible_timeranges, 
-            ["start" => AppHelper::addDaysToString($validated_unfinished_reservations["end"], 1),
-            "end" => Carbon::now()->addYear(1)
+            if($validated_unfinished_reservations[0]["start"] >= Carbon::now()->addDay(3)){
+                array_push($possible_timeranges, 
+            ["start" => Carbon::now()->toDateString(),
+            "end" => AppHelper::addDaysToString($validated_unfinished_reservations[0]["start"], -1)
             ]);
+            }
+           
+            array_push($possible_timeranges, 
+            ["start" => AppHelper::addDaysToString($validated_unfinished_reservations[0]["end"], 1),
+            "end" => Carbon::now()->addYear(1)->toDateString()
+            ]);
+            dd($possible_timeranges);
             return $possible_timeranges;
         }
 

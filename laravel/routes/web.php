@@ -54,7 +54,7 @@ Route::post('borrow/end', [EquipmentUserController::class, 'endBorrow'])->name('
 
 
 Route::get('test', function () {
-    Reservation::getPossibleReservationTimeRanges(11);
+    Reservation::getPossibleReservationTimeRanges(9);
     // $eq = Equipment::findOrFail(12);
     // return $eq->checkAvailability(11, Carbon::now(), Carbon::now()->addYear(2));
 });

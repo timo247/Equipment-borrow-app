@@ -64,6 +64,7 @@ class AppHelper
     }
 
     public static function addDaysToString($date, $nb_days){
+        $date = Carbon::parse($date);
         $new_date = Carbon::createFromFormat('Y-m-d H:i:s', $date)->addDay($nb_days)->toDateString();
         return $new_date;
     }
