@@ -11,7 +11,7 @@ class Borrow extends Model
 {
     use HasFactory;
 
-    public function equipmentDeliveredBorrowsCoveringTimeRange($id, $from, $to, $return_ids = false){
+    public static function equipmentDeliveredBorrowsCoveringTimeRange($id, $from, $to, $return_ids = false){
     $borrows = EquipmentUser::
          //begins before from, ends after from
         where([

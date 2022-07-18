@@ -19,8 +19,8 @@ class EquipmentController extends Controller
      */
     public function index($asked_category = null)
     {
-        $available_equipments = Equipment::available();
-        $unavailable_equipments = Equipment::unavailable();
+        $available_equipments = Equipment::available_ones();
+        $unavailable_equipments = Equipment::unavailable_ones();
         $all_equipments = array_merge($available_equipments, $unavailable_equipments);
         $equipments = [];
         foreach ($all_equipments as $eq) {
@@ -45,7 +45,10 @@ class EquipmentController extends Controller
                 return strcmp($a['category'], $b['category']);
             });
         }
-        return view('equipments_view')->with('data', $equipments);
+
+        $registered_users = User::get()->toArray();
+        $data = ["equipments" => $equipments, "users" => $registered_users];
+        return view('equipments_view')->with('data', $data);
     }
 
     /**

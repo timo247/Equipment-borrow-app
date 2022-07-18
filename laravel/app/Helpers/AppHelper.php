@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Carbon\Carbon;
+
 class AppHelper
 {
 
@@ -59,6 +61,11 @@ class AppHelper
             }
         }
         return $in_arr;
+    }
+
+    public static function addDaysToString($date, $nb_days){
+        $new_date = Carbon::createFromFormat('Y-m-d H:i:s', $date)->addDay($nb_days)->toDateString();
+        return $new_date;
     }
 }
 

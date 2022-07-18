@@ -40,6 +40,46 @@ class Equipment extends Model
             ->wherePivot('type', '=', 'reservation');
     }
 
+    public function getCurrentReservation()
+    {
+        $reservation = EquipmentUser::where([
+            ['type', '=', 'reservation'], ['end_validation', '=', null], ['equipment_id', '=', $this->id]
+        ])->orderBy('start_confrimation', 'desc')->limit(1)->first();
+        if (!empty($reservation)) {
+            $reservation = $reservation->toArray();
+            $reservation["username"] = User::findOrFail($reservation["user_id"])->username;
+        }
+        return ($reservation);
+    }
+
+    public function getCurrentBorrow()
+    {
+        $borrow = EquipmentUser::where([
+            ['type', '=', 'borrow'], ['end_validation', '=', null], ['equipment_id', '=', $this->id]
+        ])->orderBy('start_confrimation', 'desc')->limit(1)->first();
+        if (!empty($borrow)) {
+            $borrow = $borrow->toArray();
+            $borrow["username"] = User::findOrFail($borrow["user_id"])->username;
+        }
+        return ($borrow);
+    }
+
+    public function checkAvailability($from, $to)
+    {
+        dump("l'equipment", $this->id);
+        $constraining_reservations = Reservation::equipmentReservationsCoveringTimeRange($this->id, $from, $to);
+        dump("constraining reservations:", $constraining_reservations);
+        $constraining_delivered_borrows = Borrow::equipmentDeliveredBorrowsCoveringTimeRange($this->id, $from, $to);
+        dump("constraining  delivered borrows:", $constraining_delivered_borrows);
+        $constraining_undelivered_borrows = Borrow::equipmentUndeliveredBorrowsUntilDate($this->id, $to);
+        dump("constraining undelivered borrows:", $constraining_undelivered_borrows);
+        if (empty($constraining_reservations) && empty($constraining_delivered_borrows) && empty($constraining_undelivered_borrows)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static function categories()
     {
         $categories = DB::Table('equipments')->distinct('category')->select('category')->get();
@@ -79,7 +119,7 @@ class Equipment extends Model
         }
     }
 
-    public static function available($return_ids = false)
+    public static function available_ones($return_ids = false)
     {
         $unreserved = Equipment::unreserved_ones(true);
         $unborrowed = Equipment::unborrowed_ones(true);
@@ -93,53 +133,15 @@ class Equipment extends Model
         return $available_equipments;
     }
 
-
-    public static function unavailable($return_ids = false)
+    public static function unavailable_ones($return_ids = false)
     {
-        $available = Equipment::available(true);
+        $available_ones = Equipment::available_ones(true);
         $all_ids = Equipment::select('id')->get()->toArray();
         $all_ids =  AppHelper::array2DSingleValuesTo1D($all_ids, 'id');
-        $unavailable = array_diff($all_ids, $available);
+        $unavailable_ones = array_diff($all_ids, $available_ones);
         if (!$return_ids) {
-            $unavailable = Equipment::whereIn('id', $unavailable)->get()->toArray();
+            $unavailable = Equipment::whereIn('id', $unavailable_ones)->get()->toArray();
         }
         return ($unavailable);
-    }
-
-    public function getCurrentReservation()
-    {
-        $reservation = EquipmentUser::where([
-            ['type', '=', 'reservation'], ['end_validation', '=', null], ['equipment_id', '=', $this->id]
-        ])->orderBy('start_confrimation', 'desc')->limit(1)->first();
-        if (!empty($reservation)) {
-            $reservation = $reservation->toArray();
-            $reservation["username"] = User::findOrFail($reservation["user_id"])->username;
-        }
-        return ($reservation);
-    }
-
-    public function getCurrentBorrow()
-    {
-        $borrow = EquipmentUser::where([
-            ['type', '=', 'borrow'], ['end_validation', '=', null], ['equipment_id', '=', $this->id]
-        ])->orderBy('start_confrimation', 'desc')->limit(1)->first();
-        if (!empty($borrow)) {
-            $borrow = $borrow->toArray();
-            $borrow["username"] = User::findOrFail($borrow["user_id"])->username;
-        }
-        return ($borrow);
-    }
-
-    public function checkAvailability($from, $to)
-    {
-        $constraining_reservations = Reservation::equipmentReservationsCoveringTimeRange($this->id, $from, $to);
-        $constraining_delivered_borrows = Borrow::equipmentDeliveredBorrowsCoveringTimeRange($this->id, $from, $to);
-        $constraining_undelivered_borrows = Borrow::equipmentUndeliveredBorrowsUntilDate($this->id, $to);
-        dd($constraining_undelivered_borrows);
-        if (empty($constraining_reservations) && empty($constraining_delivered_borrows) && empty($constraining_undelivered_borrows)) {
-            return "available";
-        } else {
-            return "unavailable";
-        }
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Helpers\AppHelper;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Reservation extends Model
 {
@@ -30,13 +31,66 @@ class Reservation extends Model
         ])
         ->get()->toArray();
         $res_with_usernames = [];
+        dump('resModel: reservation untouched');
+        dump($reservations, $id, $from, $to);
         foreach($reservations as $res){        
            $username = User::where('id', '=', $res["user_id"])->select('username')->get()->toArray();
            $username = AppHelper::array2DSingleValuesTo1D($username, "username");
            $res ["username"] = $username[0];
            array_push($res_with_usernames, $res);
         }
+        // dump('resModel: toutes les reservations', $reservations);
         return($res_with_usernames);
+    }
+
+    public static function getPossibleReservationTimeRanges($equipment_id){
+        $possible_timeranges = [];
+
+        //reservations validated and currently running (when end_validation = null -> currently running)
+        $validated_unfinished_reservations = EquipmentUser::where([
+            ['equipment_id', '=', $equipment_id], ['type', '=', 'reservation'], ['start_validation', '!=', null], ['end_validation', '=', null]
+            ])->orderBy('end', 'asc')->get()->toArray();   
+        $nb_reservations = count($validated_unfinished_reservations); 
+        dump("reservations", $validated_unfinished_reservations);
+
+        if($nb_reservations == 0){
+            array_push($possible_timeranges, [
+                "start" => Carbon::now(),
+                "end" => Carbon::now()->addYear(1)
+            ]);
+        }
+
+        //If theres only one, reservation can be done from its end + 1 day untill in a year
+        if($nb_reservations == 1){
+            array_push($possible_timeranges, 
+            ["start" => AppHelper::addDaysToString($validated_unfinished_reservations["end"], 1),
+            "end" => Carbon::now()->addYear(1)
+            ]);
+            return $possible_timeranges;
+        }
+
+        //Add a timerange between all concerned reservations, staarting from then end of the earlier (+1), ending in the beginning of the following (-1)  
+        for($i = 0; $i < $nb_reservations; $i++){
+            if($i == 0){
+                $new_time_range = [
+                    "start" => AppHelper::addDaysToString($validated_unfinished_reservations[$i]["end"], 1),
+                    "end" => AppHelper::addDaysToString($validated_unfinished_reservations[$i + 1]["start"], -1)
+                ];
+            }
+            else if($i > 0 && $i <= $nb_reservations -2){
+                $new_time_range = [
+                    "start" =>  AppHelper::addDaysToString($validated_unfinished_reservations[$i]["end"], 1),
+                    "end" =>  AppHelper::addDaysToString($validated_unfinished_reservations[$i + 1]["start"], -1)
+                ];        
+            } else {
+                $new_time_range = [
+                    "start" =>  AppHelper::addDaysToString($validated_unfinished_reservations[$i]["end"], 1),
+                    "end" =>  AppHelper::addDaysToString(Carbon::now()->addYear(1)->format('Y-m-d H:i:s'), -1)
+                ];
+            }
+            array_push($possible_timeranges, $new_time_range);
+        }
+        dd($possible_timeranges);
     }
 
     // public static function equipmentsReservationsCoveringTimeRange($from, $to){

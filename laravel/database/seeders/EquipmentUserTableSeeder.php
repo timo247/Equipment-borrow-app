@@ -10,22 +10,24 @@ class EquipmentUserTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     * -1- Add a computer reserved by john doe for 1 week up untill next week but not borrowed
+     * -1- Add a computer reserved but without reservation acceptance by john doe for 1 week up untill next week but not borrowed
      * -2- Add a tablet reserved by john doe for 1 week, borrowed two weeks ago and delivered 1 week ago
      * -3- Add a camera reserved by alice for 3 weeks, borrowed two weeks ago and not delivered
      * -4- Add an earphone reserved by alice for one week, borrowed two week ago and not delivered
+     * -5- Add another reservation for alice's borrowed camera by alice for 1 month starting in one month
+     * -6- Add another reservation for alice's borrowed camera by alice for 1 month starting in five month
      * @return void
      */
     public function run()
     {
-        // -1- Add a computer reserved by john doe for 1 week up untill next week but not borrowed
+        // -1- Add a computer reserved by john doe for 1 week up untill next week but not borrowed without reservation acceptance
         DB::table('equipment_user')->insert([
             "user_id" => 3,
             "equipment_id" => 9,
             "type" => "reservation",
             "start" => Carbon::now()->subDay(1),
             "end" => Carbon::now()->addDay(6),
-            "start_validation" => Carbon::now(),
+            "start_validation" => null,
             "end_validation" => null,
             "start_validation_user_id" => 1,
             "end_validation_user_id" => null
@@ -97,6 +99,30 @@ class EquipmentUserTableSeeder extends Seeder
             "type" => "borrow",
             "start" => Carbon::now()->subWeek(2),
             "end" => null,
+            "start_validation" => Carbon::now()->subDay(13),
+            "end_validation" => null,
+            "start_validation_user_id" => 1,
+            "end_validation_user_id" => null
+        ]);
+        //-5- Add another reservation for alice's borrowed camera by alice for 1 month starting in one month//
+        DB::table('equipment_user')->insert([
+            "user_id" => 4,
+            "equipment_id" => 11,
+            "type" => "reservation",
+            "start" => Carbon::now()->addMonth(1),
+            "end" => Carbon::now()->addMonth(2),
+            "start_validation" => Carbon::now()->subDay(13),
+            "end_validation" => null,
+            "start_validation_user_id" => 1,
+            "end_validation_user_id" => null
+        ]);
+         //-5- Add another reservation for alice's borrowed camera by alice for 1 month starting in five month//
+        DB::table('equipment_user')->insert([
+            "user_id" => 4,
+            "equipment_id" => 11,
+            "type" => "reservation",
+            "start" => Carbon::now()->addMonth(5),
+            "end" => Carbon::now()->addMonth(6),
             "start_validation" => Carbon::now()->subDay(13),
             "end_validation" => null,
             "start_validation_user_id" => 1,

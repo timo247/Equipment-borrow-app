@@ -10,10 +10,12 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      * -0- Add 2 unborrowed and unreerved devices fors 4 categories (laptop, tablet, camera, earphone)
-     * -1- Add a computer reserved by john doe for 1 week up untill next week but not borrowed
+     * -1- Add a computer reserved by john doe for 1 week up untill next week but not borrowed and without reservation acceptance
      * -2- Add a tablet reserved by john doe for 1 week, borrowed two weeks ago and delivered 1 week ago
      * -3- Add a camera reserved by alice for 3 weeks, borrowed two weeks ago and not delivered
      * -4- Add an earphone reserved by alice for one week, borrowed two week ago and not delivered
+     * -5- Add another reservation for alice's borrowed camera by alice for 1 month starting in one month
+     * -6- Add another reservation for alice's borrowed camera by alice for 1 month starting in five month
      * @return void
      */
     public function run()

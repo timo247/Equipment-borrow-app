@@ -34,7 +34,12 @@ Route::get('equipments/category/{category}', [EquipmentController::class, "index
 Route::get('categories', [EquipmentController::class, 'getCategories'])->name('categories');
 
 Route::get('interactions', [EquipmentUserController::class, 'getInteractions']);
-Route::post('reserve', [ReservationsController::class, 'reserve'])->name('reserve');
+Route::post('reserve', [ReservationsController::class, 'store'])->name('reservation.store');
+// Route::post('reserve', function(){
+//     dd('ici');
+//     return null;
+// });
+
 Route::post('reserve/accept', [ReservationsController::class, 'acceptReservation'])->name('reserve.accept');
 Route::post('reserve/cancel', [ReservationsController::class, 'cancelreservation'])->name('reserve.cancel');
 Route::post('borrow/', [EquipmentUserController::class, 'borrow'])->name('borrow.start');
@@ -49,9 +54,9 @@ Route::post('borrow/end', [EquipmentUserController::class, 'endBorrow'])->name('
 
 
 Route::get('test', function () {
-    $eq = Equipment::findOrFail(12);
-    return Reservation::equipmentReservationsCoveringTimeRange(11, Carbon::now(), Carbon::now()->addYear(2));
-    // dd($eq, $potential_reservations);("2022-07-21");
+    Reservation::getPossibleReservationTimeRanges(11);
+    // $eq = Equipment::findOrFail(12);
+    // return $eq->checkAvailability(11, Carbon::now(), Carbon::now()->addYear(2));
 });
 Route::get('test2', function () {
     return EquipmentUser::validateAllFinishedReservations();
