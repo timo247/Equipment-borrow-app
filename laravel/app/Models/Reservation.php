@@ -11,7 +11,7 @@ class Reservation extends Model
 {
     use HasFactory;
 
-    public static function equipmentReservationsCoveringTimeRange($id, $from, $to, $return_ids = false)
+    public static function validatedReservationsCoveringTimeRange($id, $from, $to, $return_ids = false)
     {
         $reservations = EquipmentUser::
             //begins before from, ends after from
@@ -32,6 +32,39 @@ class Reservation extends Model
             ])
             ->get()->toArray();
         $res_with_usernames = [];
+        // dump('resModel: reservation untouched');
+        // dump($reservations, $id, $from, $to);
+        foreach ($reservations as $res) {
+            $username = User::where('id', '=', $res["user_id"])->select('username')->get()->toArray();
+            $username = AppHelper::array2DSingleValuesTo1D($username, "username");
+            $res["username"] = $username[0];
+            array_push($res_with_usernames, $res);
+        }
+        // dump('resModel: toutes les reservations', $reservations);
+        return ($res_with_usernames);
+    }
+
+    public static function equipmentReservationsCoveringTimeRange($id, $from, $to, $return_ids = false)
+    {
+        $reservations = EquipmentUser::
+            //begins before from, ends after from
+            where([
+                ["equipment_id", "=", $id], ["type", "=", "reservation"], ["start", "<=", $from], ["end", ">=", $from]
+            ])->
+            //begins before to, ends after to
+            orWhere([
+                ["equipment_id", "=", $id], ["type", "=", "reservation"], ["start", "<=", $to], ["end", ">=", $to]
+            ])->
+            //begins after from, ends before to
+            orWhere([
+                ["equipment_id", "=", $id], ["type", "=", "reservation"], ["start", ">=", $from], ["end", "<=", $to]
+            ])->
+            //begins before from, ends after to
+            orWhere([
+                ["equipment_id", "=", $id], ["type", "=", "reservation"], ["start", "<=", $from], ["end", ">=", $to]
+            ])
+            ->get()->toArray();
+        $res_with_usernames = [];
         dump('resModel: reservation untouched');
         dump($reservations, $id, $from, $to);
         foreach ($reservations as $res) {
@@ -44,7 +77,7 @@ class Reservation extends Model
         return ($res_with_usernames);
     }
 
-    public static function getPossibleReservationTimeRanges($equipment_id)
+    public static function possibleReservationTimeRanges($equipment_id)
     {
         $possible_timeranges = [];
 

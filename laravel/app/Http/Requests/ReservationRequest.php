@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Reservation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ReservationRequest extends FormRequest
@@ -23,6 +24,11 @@ class ReservationRequest extends FormRequest
      */
     public function rules()
     {
+
+        
+        $possible_reservations_timeRanges = Reservation::possibleReservationTimeRanges($this->input('equipment_id'));
+        dd($this->input('equipment_id'));
+
         return [
             "user_id" => 'required|numeric',
             "equipment_id" => 'required|numeric',

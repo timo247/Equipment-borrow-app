@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Gate;
 
 class ReservationsController extends Controller
 {
-    public function store(Request $request){
+    public function store(ReservationRequest $request){
         dump($request->input());
         $user = Auth::user();
         if(!Gate::allows('isAdmin')){

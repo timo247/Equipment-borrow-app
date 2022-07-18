@@ -66,13 +66,13 @@ class Equipment extends Model
 
     public function checkAvailability($from, $to)
     {
-        dump("l'equipment", $this->id);
+        // dump("l'equipment", $this->id);
         $constraining_reservations = Reservation::equipmentReservationsCoveringTimeRange($this->id, $from, $to);
-        dump("constraining reservations:", $constraining_reservations);
+        // dump("constraining reservations:", $constraining_reservations);
         $constraining_delivered_borrows = Borrow::equipmentDeliveredBorrowsCoveringTimeRange($this->id, $from, $to);
-        dump("constraining  delivered borrows:", $constraining_delivered_borrows);
+        // dump("constraining  delivered borrows:", $constraining_delivered_borrows);
         $constraining_undelivered_borrows = Borrow::equipmentUndeliveredBorrowsUntilDate($this->id, $to);
-        dump("constraining undelivered borrows:", $constraining_undelivered_borrows);
+        // dump("constraining undelivered borrows:", $constraining_undelivered_borrows);
         if (empty($constraining_reservations) && empty($constraining_delivered_borrows) && empty($constraining_undelivered_borrows)) {
             return true;
         } else {
