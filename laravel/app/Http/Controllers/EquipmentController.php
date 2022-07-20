@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Borrow;
 use App\Models\Equipment;
 use App\Helpers\AppHelper;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use App\Models\EquipmentUser;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -28,11 +30,12 @@ class EquipmentController extends Controller
             $eq_is_available = AppHelper::in_multidimensional_array($available_equipments, $eq, "id");
             if($eq_is_available){
                 $eq["availability"] = "available";
+                $eq["borrow"] = null;
             } else {
                 $eq["availability"] = "unavailable";
+                $eq["borrow"] = Borrow::currentBorrows($eq["id"]);
             }
             $eq["reservations"] = $reservations;
-            $eq["borrow"] = null;
             array_push($equipments, $eq);
         }
         //ne retourne qu'une seule catégorie ou ordonne selon la catégorie

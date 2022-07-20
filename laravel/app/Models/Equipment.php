@@ -121,9 +121,12 @@ class Equipment extends Model
 
     public static function available_ones($return_ids = false)
     {
-        $unreserved = Equipment::unreserved_ones(true);
+        $all_ids = Equipment::select('id')->get()->toArray();
+        if(!empty($all_ids)){
+            $all_ids = AppHelper::array2DSingleValuesTo1D($all_ids, 'id');
+        }
         $unborrowed = Equipment::unborrowed_ones(true);
-        $available_ids = array_intersect($unreserved, $unborrowed);
+        $available_ids = array_intersect($all_ids, $unborrowed);
         if ($return_ids) {
             $available_equipments = Equipment::whereIn('id', $available_ids)->select('id')->get()->toArray();
             $available_equipments = AppHelper::array2DSingleValuesTo1D($available_equipments, 'id');
@@ -140,8 +143,8 @@ class Equipment extends Model
         $all_ids =  AppHelper::array2DSingleValuesTo1D($all_ids, 'id');
         $unavailable_ones = array_diff($all_ids, $available_ones);
         if (!$return_ids) {
-            $unavailable = Equipment::whereIn('id', $unavailable_ones)->get()->toArray();
+            $unavailable_ones = Equipment::whereIn('id', $unavailable_ones)->get()->toArray();
         }
-        return ($unavailable);
+        return ($unavailable_ones);
     }
 }

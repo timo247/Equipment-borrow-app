@@ -11,13 +11,7 @@ class EquipmentUserController extends Controller
 {
 
 
-    public function borrow(Request $request){
-        dd('borrow->');
-    }
-
-    public function endBorrow(Request $request){
-        dd('end-borrow->');
-    }
+    
 
 
 

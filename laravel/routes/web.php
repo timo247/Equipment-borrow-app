@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use App\Models\EquipmentUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BorrowsController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ReservationsController;
@@ -42,8 +43,8 @@ Route::post('reserve', [ReservationsController::class, 'store'])->name('reservat
 
 Route::post('reserve/accept', [ReservationsController::class, 'acceptReservation'])->name('reserve.accept');
 Route::post('reserve/cancel', [ReservationsController::class, 'cancelreservation'])->name('reserve.cancel');
-Route::post('borrow/', [EquipmentUserController::class, 'borrow'])->name('borrow.start');
-Route::post('borrow/end', [EquipmentUserController::class, 'endBorrow'])->name('borrow.end');
+Route::post('borrow/', [BorrowsController::class, 'borrow'])->name('borrow.start');
+Route::post('borrow/end', [BorrowsController::class, 'endBorrow'])->name('borrow.end');
 
 
 

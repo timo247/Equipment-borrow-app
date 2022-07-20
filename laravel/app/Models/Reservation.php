@@ -30,7 +30,7 @@ class Reservation extends Model
             orWhere([
                 ["equipment_id", "=", $id], ["type", "=", "reservation"], ["start_validation", "!=", null],  ["start", "<=", $from], ["end", ">=", $to]
             ])
-            ->get()->toArray();
+            ->get()->sortBy('start')->toArray();
         $res_with_usernames = [];
         // dump('resModel: reservation untouched');
         // dump($reservations, $id, $from, $to);
@@ -63,10 +63,8 @@ class Reservation extends Model
             orWhere([
                 ["equipment_id", "=", $id], ["type", "=", "reservation"], ["start", "<=", $from], ["end", ">=", $to]
             ])
-            ->get()->toArray();
+            ->get()->sortBy('start')->toArray();
         $res_with_usernames = [];
-        dump('resModel: reservation untouched');
-        dump($reservations, $id, $from, $to);
         foreach ($reservations as $res) {
             $username = User::where('id', '=', $res["user_id"])->select('username')->get()->toArray();
             $username = AppHelper::array2DSingleValuesTo1D($username, "username");

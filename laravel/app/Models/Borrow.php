@@ -48,7 +48,17 @@ class Borrow extends Model
         if(!empty($ids)){
             $ids = AppHelper::array2DSingleValuesTo1D($ids, "id");
         }
-        dd($ids);
+    }
+
+    public static function currentBorrows($equipment_id){
+        $borrow = EquipmentUser::where([
+            ['equipment_id', '=', $equipment_id], ['type', '=', 'borrow'], ['start_validation', '!=', null], ['end_validation', '=', null]
+        ])->first()->toArray();
+        if($borrow != null){       
+            $username = User::where('id', '=', $borrow["user_id"])->select('username')->first()->toArray();
+            $borrow["username"] = $username["username"];
+        }
+        return $borrow;
     }
 
 }
