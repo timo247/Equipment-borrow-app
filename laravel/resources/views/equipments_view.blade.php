@@ -22,12 +22,38 @@
                                         <form class="reserve-form" action="{{ route('reserve.accept') }}" method="POST">
                                             @csrf
                                             @method('POST')
+                                            <div class="form-group {!! $errors->has('equipment_is_not_reservable') ? 'haserror' : '' !!}">
+                                                {!! $errors->first('equipment_is_not_reservable', '<small class="helpblock">:message</small>') !!}
+                                            </div>
+                                            <div class="form-group {!! $errors->has('equipment_id') ? 'haserror' : '' !!}">
+                                                <input type="hidden" name="equipment_id"
+                                                    value="{{ $reservation['equipment_id'] }}">
+                                                {!! $errors->first('equipment_id', '<small class="helpblock">:message</small>') !!}
+                                            </div>
+                                            <div class="form-group {!! $errors->has('user_id') ? 'haserror' : '' !!}">
+                                                <input type="hidden" name="user_id" value="{{ $reservation['user_id'] }}">
+                                                {!! $errors->first('user_id', '<small class="helpblock">:message</small>') !!}
+                                            </div>
+                                            <input type="hidden" name="id" value="{{ $reservation['id'] }}">
                                             <input type="submit" class="accept-reserve-button" value="accept reservation">
                                         </form>
                                     @endif
                                     <form class="reserve-form" action="{{ route('reserve.cancel') }}" method="POST">
                                         @csrf
                                         @method('POST')
+                                        <div class="form-group {!! $errors->has('equipment_is_not_reservable') ? 'haserror' : '' !!}">
+                                            {!! $errors->first('equipment_is_not_reservable', '<small class="helpblock">:message</small>') !!}
+                                        </div>
+                                        <div class="form-group {!! $errors->has('equipment_id') ? 'haserror' : '' !!}">
+                                            <input type="hidden" name="equipment_id"
+                                                value="{{ $reservation['equipment_id'] }}">
+                                            {!! $errors->first('equipment_id', '<small class="helpblock">:message</small>') !!}
+                                        </div>
+                                        <div class="form-group {!! $errors->has('user_id') ? 'haserror' : '' !!}">
+                                            <input type="hidden" name="user_id" value="{{ $reservation['user_id'] }}">
+                                            {!! $errors->first('user_id', '<small class="helpblock">:message</small>') !!}
+                                        </div>
+                                        <input type="hidden" name="id" value="{{ $reservation["id"] }}">
                                         <input type="submit" class="cancel-reserve-button" value="cancel reservation">
                                     </form>
                                 @endcan
@@ -104,7 +130,7 @@
                                 </form>
                             @endif
                         @endcan
-                    @endif    
+                    @endif
                 </div>
             @endforeach
         </div>

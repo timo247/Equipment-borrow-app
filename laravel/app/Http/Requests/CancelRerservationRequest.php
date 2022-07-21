@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class AcceptRerservationRequest extends FormRequest
+class CancelRerservationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -37,12 +37,12 @@ class AcceptRerservationRequest extends FormRequest
             throw ValidationException::withMessages(['user_id' => __('The user sent does not exist.')]);
         }
 
-        // Check if Equipment is currently reservationed and not confirmed
+        // Check if Equipment is currently reservationed:
         $reservation = EquipmentUser::where([
-            ['id', '=', $this->input('id')], ['type', '=', 'reservation'], ["equipment_id", '=', $this->input('equipment_id')], ['start_validation', '=', null]
+            ['id', '=', $this->input('id')], ['type', '=', 'reservation'], ["equipment_id", '=', $this->input('equipment_id')]
         ])->get()->toArray();
         
-        //The equipment must be reserved and not confirmerd
+        //If the equipment is not reserved, it cannot be canceled
         if (empty($reservation)) {
                 throw ValidationException::withMessages(['equipment_is_not_reservable' => __('This equipment is not reserved or its reservation is already accepted')]);
         } 

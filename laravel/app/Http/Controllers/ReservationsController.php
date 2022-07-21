@@ -10,12 +10,14 @@ use App\Models\EquipmentUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\ReservationRequest;
+use App\Http\Requests\AcceptRerservationRequest;
+use App\Http\Requests\CancelRerservationRequest;
+use App\Http\Requests\AcceptCancelRerservationRequest;
 
 class ReservationsController extends Controller
 {
     public function store(ReservationRequest $request)
     {
-        dump($request->input());
         $user = Auth::user();
         //Only admins can make reservations for other users
         if (!Gate::allows('isAdmin')) {
@@ -39,19 +41,27 @@ class ReservationsController extends Controller
         your equipment.');
     }
 
-    public function acceptReservation(ReservationRequest $request)
+    public function acceptReservation(AcceptRerservationRequest $request)
     {
         $reservation = EquipmentUser::where([
-            'id', '=', $request->input('reservation_id')
-            ])->first();
+            ['id', '=', $request->input('id')]
+        ])->first();
         $reservation->update([
             "start_validation" => Carbon::now(),
             "start_validation_user_id" => Auth::id()
         ]);
+        return redirect('/equipments')->withOk('The reservation'. $request->input('id').' is accepted.');
     }
 
-    public function cancelReservation(Request $request)
+    public function cancelReservation(CancelRerservationRequest $request)
     {
-        dd('cancel-reserve->');
+        $reservation = EquipmentUser::where([
+            ['id', '=', $request->input('id')]
+        ])->first();
+        $reservation->update([
+            "end_validation" => "0000-00-00",
+            "end_validation_user_id" => Auth::id()
+        ]);
+        return redirect('/equipments')->withOk('The reservation'. $request->input('id').' is cancelled.');
     }
 }
