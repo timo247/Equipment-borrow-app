@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Models\Equipment;
 use App\Models\Reservation;
 use App\Models\EquipmentUser;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BorrowsController;
@@ -55,7 +56,20 @@ Route::post('borrow/end', [BorrowsController::class, 'endBorrow'])->name('borrow
 
 
 Route::get('test', function () {
-    dd(Reservation::getPossibleReservationTimeRanges(11));
+    $res =  EquipmentUser::where('id', '=', 12)->first()->toArray();
+    $end = strtotime($res["end_validation"]);
+    $comp = strtotime("0000-00-00");
+    $net = ["ihi" => 6];
+    $jo = "jo";
+
+    $tab = ["1", $end, $comp, $net, $jo];
+    dump($end, $comp, $end == $comp, $tab);
+
+    $index = array_search($net, $tab);
+    array_splice($tab, $index, 1);
+    dump($tab, $index);
+
+
     // $eq = Equipment::findOrFail(12);
     // return $eq->checkAvailability(11, Carbon::now(), Carbon::now()->addYear(2));
 });

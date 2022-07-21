@@ -11,7 +11,7 @@ class Reservation extends Model
 {
     use HasFactory;
 
-    public static function validatedReservationsCoveringTimeRange($id, $from, $to,  $include_cancelled_ones = false)
+    public static function validatedReservationsCoveringTimeRange($id, $from, $to, $return_ids = false)
     {
         $reservations = EquipmentUser::
             //begins before from, ends after from
@@ -38,13 +38,7 @@ class Reservation extends Model
             $username = User::where('id', '=', $res["user_id"])->select('username')->get()->toArray();
             $username = AppHelper::array2DSingleValuesTo1D($username, "username");
             $res["username"] = $username[0];
-
-            // //Verify if controller asks cancelled reservations and the reservation is not cancelled
-            // if(!$include_cancelled_ones){
-            //     if (!$res["end_validation"] == strtotime('0000-00-00')){
-            //         array_push($res_with_usernames, $res);
-            //     }
-            // }
+            array_push($res_with_usernames, $res);
         }
         // dump('resModel: toutes les reservations', $reservations);
         return ($res_with_usernames);
