@@ -44,6 +44,7 @@ Route::post('reserve', [ReservationsController::class, 'store'])->name('reservat
 
 Route::post('reserve/accept', [ReservationsController::class, 'acceptReservation'])->name('reserve.accept');
 Route::post('reserve/cancel', [ReservationsController::class, 'cancelreservation'])->name('reserve.cancel');
+Route::get('reservations', [ReservationsController::class, 'index'])->name('resrvations.index');
 Route::post('borrow/', [BorrowsController::class, 'borrow'])->name('borrow.start');
 Route::post('borrow/end', [BorrowsController::class, 'endBorrow'])->name('borrow.end');
 
@@ -55,7 +56,7 @@ Route::post('borrow/end', [BorrowsController::class, 'endBorrow'])->name('borrow
 
 
 
-Route::get('test', function () {
+Route::get('test3', function () {
     $res =  EquipmentUser::where('id', '=', 12)->first()->toArray();
     $end = strtotime($res["end_validation"]);
     $comp = strtotime("0000-00-00");
@@ -73,7 +74,7 @@ Route::get('test', function () {
     // $eq = Equipment::findOrFail(12);
     // return $eq->checkAvailability(11, Carbon::now(), Carbon::now()->addYear(2));
 });
-Route::get('test2', function () {
+Route::get('test', function () {
     return EquipmentUser::validateAllFinishedReservations();
 });
 

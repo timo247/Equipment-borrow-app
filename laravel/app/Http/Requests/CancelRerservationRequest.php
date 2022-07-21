@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\User;
 use App\Models\EquipmentUser;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
@@ -17,8 +18,12 @@ class CancelRerservationRequest extends FormRequest
      */
     public function authorize()
     {
-        if(!Gate::allows('isAdmin')){
-            return false;
+        if (!Gate::allows('isAdmin')) {
+            if ($this->input('user_id') == Auth::id()) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return true;
         }
@@ -33,7 +38,7 @@ class CancelRerservationRequest extends FormRequest
     {
         //Check if user exists
         $user = User::where('id', '=', $this->input('user_id'))->get()->toArray();
-        if(empty($user)){
+        if (empty($user)) {
             throw ValidationException::withMessages(['user_id' => __('The user sent does not exist.')]);
         }
 
@@ -41,11 +46,11 @@ class CancelRerservationRequest extends FormRequest
         $reservation = EquipmentUser::where([
             ['id', '=', $this->input('id')], ['type', '=', 'reservation'], ["equipment_id", '=', $this->input('equipment_id')]
         ])->get()->toArray();
-        
+
         //If the equipment is not reserved, it cannot be canceled
         if (empty($reservation)) {
-                throw ValidationException::withMessages(['equipment_is_not_reservable' => __('This equipment is not reserved or its reservation is already accepted')]);
-        } 
+            throw ValidationException::withMessages(['equipment_is_not_reservable' => __('This equipment is not reserved or its reservation is already accepted')]);
+        }
 
         return [
             'id' => "required|numeric",

@@ -16,6 +16,7 @@ class EquipmentUserTableSeeder extends Seeder
      * -4- Add an earphone reserved by alice for one week, borrowed two week ago and not delivered
      * -5- Add another reservation for alice's borrowed camera by alice for 1 month starting in one month
      * -6- Add another reservation for alice's borrowed camera by alice for 1 month starting in five month
+     * -7- Add a reservation by John Doe for 3 weeks and cancelled
      * @return void
      */
     public function run()
@@ -116,7 +117,7 @@ class EquipmentUserTableSeeder extends Seeder
             "start_validation_user_id" => 1,
             "end_validation_user_id" => null
         ]);
-         //-5- Add another reservation for alice's borrowed camera by alice for 1 month starting in five month//
+         //-6- Add another reservation for alice's borrowed camera by alice for 1 month starting in five month//
         DB::table('equipment_user')->insert([
             "user_id" => 4,
             "equipment_id" => 11,
@@ -127,6 +128,19 @@ class EquipmentUserTableSeeder extends Seeder
             "end_validation" => null,
             "start_validation_user_id" => 1,
             "end_validation_user_id" => null
+        ]);
+         //-7- Add a reservation by John Doe for 3 weeks and cancelled
+         DB::table('equipment_user')->insert([
+            "user_id" => 3,
+            "equipment_id" => 12,
+            "type" => "reservation",
+            "start" => Carbon::now()->addMonth(5),
+            "end" => Carbon::now()->addMonth(6),
+            "start_validation" => Carbon::now()->subDay(13),
+            "end_validation" => "0000-00-00",
+            "start_validation_user_id" => 1,
+            "end_validation_user_id" => 1,
+            "updated_at" => Carbon::now()->subDay(1)
         ]);
     }
 }
