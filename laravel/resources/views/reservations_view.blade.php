@@ -1,8 +1,9 @@
 @extends('template')
 @section('contenu')
     <h2>List of reservations</h2>
+    {{-- fitler for user to chose what to display --}}
     <div class="filter">
-        <form class="filter_form" action="/" method="GET">
+        <form class="filter-form" action="/" method="GET">
             <label for="equipment">Equipment</label>
             <select class="equipment_id">
                 @foreach ($data['equipments'] as $eq)
@@ -20,10 +21,11 @@
                 <label for="status-filter-all">Unvalidated</label>
                 <input class="status-filter-radio" type="radio" value="unvalidated" name="status-filter">
                 <label for="status-filter-validated">Validated</label>
-                <input class="status-filter-radio" type="radio" value="validated">
+                <input class="status-filter-radio" type="radio" value="validated" name="status-filter">
                 <label for="status-filter-cancelled">Cancelled</label>
-                <input class="status-filter-radio" type="radio" value="cancelled">
+                <input class="status-filter-radio" type="radio" value="cancelled" name="status-filter">
             </div>
+            <input class="submit-filter" type="submit" value="apply filters">
         </form>
     </div>
     <div class="panel panel-info">
@@ -31,9 +33,13 @@
         @foreach ($data['reservations'] as $reservation)
             <div class="reservation" data-currentlyRunning="{{ $reservation['currently_running'] }}"
                 data-awaintingValidation="{{ $reservation['awaiting_validation'] }}"
-                data-cancelled="{{ $reservation['cancelled'] }}" $data-userId="{{ $reservation['user_id'] }}"
-                $data-equipmentId="{{ $reservation['equipment_id'] }}" $data-start="{{ $reservation['start'] }}"
-                $data-end="{{ $reservation['end'] }}">
+                data-cancelled="{{ $reservation['cancelled'] }}"
+                data-userId="{{ $reservation['user_id'] }}"
+                data-equipmentId="{{ $reservation['equipment_id'] }}"
+                data-start="{{ \Carbon\Carbon::parse($reservation['start'])->format('l j F Y') }}"
+                data-end="{{ \Carbon\Carbon::parse($reservation['end'])->format('l j F Y')  }}"
+                data-fromOk = true
+                data-toOk = true>
                 <a href="/equipments#equipment-{{ $reservation["equipment_id"] }}">
                     <img style="max-width: 50px" src="{{ asset('/storage/images/' . $reservation['equ_img_url']) }}">
                 </a>
@@ -91,4 +97,65 @@
             </div>
         @endforeach
     </div>
+
+
+    <script>
+        const   filter_form = document.querySelector('.filter-form')
+        function filterByFrom(reservations){
+            const from_input = document.querySelector('.from-input')
+            from_input.addEventListener('input', (e) => {
+                reservations.forEach(reservation => {
+                   const start_form = new Date(e.target.value)
+                   const start_reservation = new Date(reservation.dataset.start)
+                    if(start_reservation > start_form){
+                        reservation.dataset.fromOk = true
+                    } else {
+                        reservation.dataset.fromOk = false
+                    }
+                });
+            })
+        }  
+
+        function filterByTo(reservations){
+            const to_input = document.querySelector('.to-input')
+            to_input.addEventListener('input', (e) => {
+                reservations.forEach(reservation => {
+                   const end_form = new Date(e.target.value)
+                   const end_reservation = new Date(reservation.dataset.end)
+                    if(end_reservation < end_form){
+                        reservation.dataset.toOk = true 
+                    } else {
+                        reservation.dataset.toOk = false
+                    }
+                });
+            })
+        }
+
+        function hideAndShowReservations(reservations){
+            console.log("on hide", reservations)
+            reservations.forEach(reservation => {
+                if(!reservation.dataset.fromOk || !reservation.dataset.toOk){
+                    reservation.classList.add('hidden')
+                } else {
+                    reservation.classList.remove('hidden')
+                }
+            })
+        }
+
+        const reservations = document.querySelectorAll('.reservation')  
+        filterByFrom(reservations)
+        filterByTo(reservations)
+
+        filter_form.addEventListener('submit', (e) => {
+            console.log('submit')
+            e.preventDefault();
+            const reservations = document.querySelectorAll('.reservation')  
+            hideAndShowReservations(reservations)
+        })
+        
+        
+
+    </script>
 @endsection
+
+

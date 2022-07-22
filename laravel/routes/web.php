@@ -47,6 +47,7 @@ Route::post('reserve/cancel', [ReservationsController::class, 'cancelreservation
 Route::get('reservations', [ReservationsController::class, 'index'])->name('resrvations.index');
 Route::post('borrow/', [BorrowsController::class, 'borrow'])->name('borrow.start');
 Route::post('borrow/end', [BorrowsController::class, 'endBorrow'])->name('borrow.end');
+Route::get('borrows', [BorrowsController::class, 'index'])->name('borrows.index');
 
 
 

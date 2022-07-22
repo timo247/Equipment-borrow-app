@@ -80,7 +80,7 @@ class ReservationsController extends Controller
             $reservations = EquipmentUser::where([
                 ["type", "=", "reservation"], ["user_id", '=', Auth::id()]
             ])->get()->toArray();
-            $equipments = $user =Auth::user()->reservations;
+            $equipments = Auth::user()->reservations;
         }
         $res_to_return = [];
         //dd($reservations);
