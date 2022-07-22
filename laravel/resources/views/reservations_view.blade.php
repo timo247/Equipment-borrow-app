@@ -34,7 +34,9 @@
                 data-cancelled="{{ $reservation['cancelled'] }}" $data-userId="{{ $reservation['user_id'] }}"
                 $data-equipmentId="{{ $reservation['equipment_id'] }}" $data-start="{{ $reservation['start'] }}"
                 $data-end="{{ $reservation['end'] }}">
-                <img style="max-width: 50px" src="{{ asset('/storage/images/' . $reservation['equ_img_url']) }}">
+                <a href="/equipments#equipment-{{ $reservation["equipment_id"] }}">
+                    <img style="max-width: 50px" src="{{ asset('/storage/images/' . $reservation['equ_img_url']) }}">
+                </a>
                 <span class="name"> {{ $reservation['equ_name'] }} </span>
                 <span class="start"> From {{ \Carbon\Carbon::parse($reservation['start'])->format('l j F Y') }}
                     to {{ \Carbon\Carbon::parse($reservation['end'])->format('l j F Y') }}

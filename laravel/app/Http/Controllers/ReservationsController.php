@@ -38,7 +38,7 @@ class ReservationsController extends Controller
         $reservation->end = $request->input('to');
         $reservation->save();
 
-        return redirect('/equipments')->withOk('Your reservation has been sent, please wait untill an admin confirms it to come get
+        return redirect('/equipments#equipment-'.$request->input('equipment_id'))->withOk('Your reservation has been sent, please wait untill an admin confirms it to come get
         your equipment.');
     }
 
@@ -51,7 +51,7 @@ class ReservationsController extends Controller
             "start_validation" => Carbon::now(),
             "start_validation_user_id" => Auth::id()
         ]);
-        return redirect('/equipments')->withOk('The reservation'. $request->input('id').' is accepted.');
+        return redirect('/equipments#equipment-'.$request->input('equipment_id'))->withOk('The reservation'. $request->input('id').' is accepted.');
     }
 
     public function cancelReservation(CancelRerservationRequest $request)
@@ -63,7 +63,7 @@ class ReservationsController extends Controller
             "end_validation" => "0000-00-00",
             "end_validation_user_id" => Auth::id()
         ]);
-        return redirect('/equipments')->withOk('The reservation'. $request->input('id').' is cancelled.');
+        return redirect('/equipments#equipment-'.$request->input('equipment_id'))->withOk('The reservation'. $request->input('id').' is cancelled.');
     }
 
     public function index(){

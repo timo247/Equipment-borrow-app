@@ -5,7 +5,7 @@
         <div class="panel panel-info">
             {{-- Equipments list --}}
             @foreach ($data['equipments'] as $equipment)
-                <div class="equipment" data-available="{{ $equipment['availability'] }}">
+                <div id="equipment-{{ $equipment["id"] }}" class="equipment" data-available="{{ $equipment['availability'] }}">
                     <img style="max-width: 200px" src="{{ asset('/storage/images/' . $equipment['image_url']) }}">
                     <span class="name"> {{ $equipment['name'] }} </span>
                     <span class="description"> {{ $equipment['description'] }}</span>
@@ -143,6 +143,7 @@
                                 <div class="form-group {!! $errors->has('equipment_is_not_borrowed') ? 'haserror' : '' !!}">
                                     {!! $errors->first('equipment_is_not_borrowed', '<small class="helpblock">:message</small>') !!}
                                 </div>
+                                <input type="hidden" name="equipment_id" value=" {{ $equipment["borrow"]["equipment_id"] }}">
                                 <input type="hidden" name="borrow_id" value="{{ $equipment['borrow']['id'] }}">
                                 <input type="submit" class="cancel-borrow-button" value="end borrow">
                             </form>

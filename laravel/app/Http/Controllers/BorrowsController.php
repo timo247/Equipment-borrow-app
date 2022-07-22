@@ -20,6 +20,8 @@ class BorrowsController extends Controller
         $borrow->start_validation = Carbon::now();
         $borrow->start_validation_user_id = Auth::id();
         $borrow->save();
+
+        return redirect('/equipments#equipment-'.$request->input('equipment_id'))->withOk('Your borrow has been registered');
     }
 
     public function endBorrow(EndBorrowRequest $request){
@@ -30,6 +32,7 @@ class BorrowsController extends Controller
         $borrow->update([
             "end_validation" => Carbon::now(),
             "end_validation_user_id" => Auth::id()
-        ]);    
+        ]);       
+        return redirect('/equipments#equipment-'.$request->input('equipment_id'))->withOk('Your borrow has been ended.');
     }
 }
