@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Equipment;
 use App\Helpers\AppHelper;
 use App\Models\Reservation;
@@ -76,11 +77,13 @@ class ReservationsController extends Controller
                 ["type", "=", "reservation"]
             ])->get()->toArray();
             $equipments = Equipment::select('id', 'name', 'image_url')->get()->toArray();
+            $users = User::select('id', 'username')->get()->toArray();
         } else {
             $reservations = EquipmentUser::where([
                 ["type", "=", "reservation"], ["user_id", '=', Auth::id()]
             ])->get()->toArray();
             $equipments = Auth::user()->reservations;
+            $users = null;
         }
         $res_to_return = [];
         //dd($reservations);
@@ -100,6 +103,9 @@ class ReservationsController extends Controller
             if(strtotime($res["end_validation"]) == strtotime("0000-00-00")){
                 $cancelled = true;
             }
+
+            $username = User::where('id', '=', $res["user_id"])->select('username')->first();
+            $res["username"] = $username["username"];
             $res["currently_running"] = $currently_running;
             $res["awaiting_validation"] = $awaiting_validation;
             $res["cancelled"] = $cancelled;
@@ -111,9 +117,9 @@ class ReservationsController extends Controller
 
         $data = [
             "reservations" => $res_to_return,
-            "equipments" => $equipments
+            "equipments" => $equipments,
+            "users" => $users
         ];
-
         return view("reservations_view")->with("data", $data);
     }
 }

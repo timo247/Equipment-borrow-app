@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Equipment;
 use Illuminate\Http\Request;
 use App\Models\EquipmentUser;
@@ -40,9 +41,8 @@ class BorrowsController extends Controller
 
     public function index(){
         if(!Auth::check()){
-            return route("login");
+            return route("home");
         }
-
         if(Gate::allows('isAdmin')){
             $borrows = EquipmentUser::where([
                 ["type", "=", "borrow"]
@@ -51,7 +51,7 @@ class BorrowsController extends Controller
         } else {
             $borrows = EquipmentUser::where([
                 ["type", "=", "borrow"], ["user_id", '=', Auth::id()]
-            ])->get()->toArray();
+            ])->select('id', 'name', 'image_url')->get()->toArray();
             $equipments = Auth::user()->borrows;
         }
         $bor_to_return = [];
@@ -61,15 +61,19 @@ class BorrowsController extends Controller
             if($bor["end_validation"]  == null){
                 $currently_running = true;
             }
+            $username = User::where('id', '=', $bor["user_id"])->select('username')->first();
+            $bor["username"] = $username["username"];
             $bor["currently_running"] = $currently_running;
             $bor["equ_img_url"] = $eq->image_url;
             $bor["equ_name"] = $eq->name;
             array_push($bor_to_return, $bor);
         }
 
+        $users = User::get()->toArray();
         $data = [
             "borrows" => $bor_to_return,
-            "equipments" => $equipments
+            "equipments" => $equipments,
+            "users" => $users
         ];
         return view("borrows_view")->with("data", $data);
     }
